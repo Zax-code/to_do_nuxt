@@ -8,4 +8,5 @@ export default interface Task {
     index: number;
     createdAt : Date;
     lastUpdate : Date;
+    userId?: string;
 }

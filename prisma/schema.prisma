@@ -1,8 +1,5 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
 }
 
 datasource db {
@@ -11,11 +8,12 @@ datasource db {
 }
 
 model Task {
-  id          String      @id @default(cuid())
+  id          String   @id @default(cuid())
   title       String
   description String
   status      String
   index       Int
   createdAt   DateTime @default(now())
   lastUpdate  DateTime @default(now())
+  userId      String?
 }

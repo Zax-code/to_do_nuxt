@@ -14,15 +14,11 @@ const user = useSupabaseUser();
 
 const { data: tasks, refresh: refreshTasks, pending: taskPending } = await useFetch<Task[]>('/api/tasks', {
     method: 'GET',
+    params: {
+        userId : user.value?.id || '',
+    }
 });
-const message_list = useState<{message : string, id : number}[]>(() => []);
-const pushMessage = (message : string) => {
-    const randomId = Math.floor(Math.random() * 1000000);
-    message_list.value.push({message, id : randomId});
-    setTimeout(() => {
-        message_list.value.shift();
-    }, 2000);
-}
+const { pushMessage} = useMessageList();
 
 const currentTask = useState<Task>(() =>
 ({
@@ -32,6 +28,7 @@ const currentTask = useState<Task>(() =>
     index : -1,
     createdAt : new Date(Date.now()),
     lastUpdate : new Date(Date.now()),
+    userId : user.value?.id || '',
 } as Task)
 );
 
@@ -53,6 +50,7 @@ const addTask = async (e: any) => {
             index : -1,
             createdAt : new Date(Date.now()),
             lastUpdate : new Date(Date.now()),
+            userId : user.value?.id || '',
 
         };
         pushMessage('Tache ajoutee avec succes !');
@@ -124,12 +122,6 @@ const removeTask = async (id : string | undefined) => {
 
 <template>
     <div class="flex flex-col items-center">
-            <TransitionGroup name="list" tag="div" class="fixed right-2 top-2 flex flex-col gap-2 z-10  w-1/5">
-            <div v-for="{message, id} in message_list" :key="id"
-                :class="`rounded-lg p-4 ${message.includes('Erreur') ? 'bg-red-500' : 'bg-green-500'} transition duration-500 w-full`">
-                <p class="text-center">{{ message }}</p>
-            </div>
-        </TransitionGroup>
         <h1 class="text-5xl font-bold w-full text-center ">My To Do List</h1>
         <button class="rounded-lg py-2 px-6 m-4  bg-red-950 hover:bg-red-900 hover:text-slate-50 text-lg absolute left-0 top-0" @click="client.auth.signOut()">Logout</button>
         <form class="flex flex-col items-center p-12 w-2/5" @submit="addTask">
