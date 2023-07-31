@@ -38,9 +38,9 @@ const currentTask = useState<Task>(() =>
 
 const addTask = async (e: any) => {
     e.preventDefault();
-    isLoading.value = true;
     if(currentTask.value.title === "" || currentTask.value.description === "")
         return pushMessage('Veuillez remplir tous les champs !');
+    isLoading.value = true;
     currentTask.value.index = tasks.value?.length || 0;
     const { success, error } = await $fetch('/api/tasks/add', {
         method: 'POST',
@@ -65,7 +65,6 @@ const addTask = async (e: any) => {
 };
 
 const nextStatus = async (task: Task) => {
-    isLoading.value = true;
     const status = task.status;
     if (status === "OPEN")
         task.status = "IN PROGRESS";
@@ -73,6 +72,7 @@ const nextStatus = async (task: Task) => {
         task.status = "DONE";
     else
         task.status = "OPEN";
+    isLoading.value = true;
     const { success, error } = await $fetch('/api/tasks/update', {
         method: 'POST',
         body: task
@@ -87,12 +87,12 @@ const nextStatus = async (task: Task) => {
 };
 
 const reorderTasks = async (e: Sortable.SortableEvent) => {
-    isLoading.value = true;
     const oldIndex = e.oldIndex || 0;
     const newIndex = e.newIndex || 0;
     const oldIndexId = tasks.value ? tasks.value[oldIndex].id : '';
     const newIndexId = tasks.value ? tasks.value[newIndex].id : '';
 
+    isLoading.value = true;
     const { success, error } = await $fetch('/api/tasks/reorder', {
         method: 'POST',
         body: { oldIndex, newIndex, oldIndexId, newIndexId }
