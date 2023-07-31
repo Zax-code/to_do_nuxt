@@ -6,7 +6,7 @@ export default eventHandler(async (event) => {
     receivedTask.lastUpdate = new Date(Date.now());
     console.log(receivedTask);
     try{
-        prisma.task.update({
+        await prisma.task.update({
             where: {id : receivedTask.id},
             data : {
                 title : receivedTask.title,
