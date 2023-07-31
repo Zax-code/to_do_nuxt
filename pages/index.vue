@@ -129,7 +129,9 @@ const removeTask = async (id : string | undefined) => {
 
 <template>
     <div class="flex flex-col items-center">
-        <div v-if="isLoading" class="absolute top-0 left-0 flex justify-center font-bold text-4xl items-center z-30 w-full h-full bg-black/50 text-slate-50">LOADING...</div>
+        <div v-if="isLoading" class="absolute top-0 left-0 flex flex-row justify-center font-bold text-4xl items-center z-30 w-full h-full bg-black/50 text-slate-50">
+            <span v-for="(char, i) in 'LOADING...'" :key="i" class="animate-pulse" :style="`animation-delay: ${i*2/'LOADING...'.length}s`">{{ char }}</span>
+        </div>
         <h1 class="text-5xl font-bold w-full text-center ">My To Do List</h1>
         <button class="rounded-lg py-2 px-6 m-4  bg-red-950 hover:bg-red-900 hover:text-slate-50 text-lg absolute left-0 top-0" @click="client.auth.signOut()">Logout</button>
         <form class="flex flex-col items-center p-12 w-2/5" @submit="addTask">
