@@ -8,9 +8,15 @@ export default eventHandler(async (event) => {
     try{
         prisma.task.update({
             where: {id : receivedTask.id},
-            data : receivedTask
+            data : {
+                title : receivedTask.title,
+                description : receivedTask.description,
+                lastUpdate : receivedTask.lastUpdate,
+                index : receivedTask.index,
+                status : receivedTask.status,
+            }
         })
-        return {success: true, error : "Task not found"}
+        return {success: true, error : ""}
     }
     catch(error : any){
         return { success: false, error : error.toString() as string};
