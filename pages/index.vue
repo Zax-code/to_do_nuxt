@@ -19,6 +19,10 @@ const { data: tasks, refresh: refreshTasks, pending: taskPending } = await useFe
     }
 });
 const { pushMessage} = useMessageList();
+const isLoading = useState<boolean>(() => false);
+watchEffect(() => {
+        isLoading.value = taskPending.value;
+});
 
 const currentTask = useState<Task>(() =>
 ({
@@ -34,6 +38,7 @@ const currentTask = useState<Task>(() =>
 
 const addTask = async (e: any) => {
     e.preventDefault();
+    isLoading.value = true;
     if(currentTask.value.title === "" || currentTask.value.description === "")
         return pushMessage('Veuillez remplir tous les champs !');
     currentTask.value.index = tasks.value?.length || 0;
@@ -60,6 +65,7 @@ const addTask = async (e: any) => {
 };
 
 const nextStatus = async (task: Task) => {
+    isLoading.value = true;
     const status = task.status;
     if (status === "OPEN")
         task.status = "IN PROGRESS";
@@ -81,6 +87,7 @@ const nextStatus = async (task: Task) => {
 };
 
 const reorderTasks = async (e: Sortable.SortableEvent) => {
+    isLoading.value = true;
     const oldIndex = e.oldIndex || 0;
     const newIndex = e.newIndex || 0;
     const oldIndexId = tasks.value ? tasks.value[oldIndex].id : '';
@@ -101,7 +108,7 @@ const reorderTasks = async (e: Sortable.SortableEvent) => {
 };
 
 const removeTask = async (id : string | undefined) => {
-    console.log(`removing ${id}`);
+    isLoading.value = true;
     const { success, error } = await $fetch('/api/tasks', {
         method: 'DELETE',
         params: {
@@ -122,6 +129,7 @@ const removeTask = async (id : string | undefined) => {
 
 <template>
     <div class="flex flex-col items-center">
+        <div v-if="isLoading" class="absolute w-full h-full bg-black text-slate-50">LOADING...</div>
         <h1 class="text-5xl font-bold w-full text-center ">My To Do List</h1>
         <button class="rounded-lg py-2 px-6 m-4  bg-red-950 hover:bg-red-900 hover:text-slate-50 text-lg absolute left-0 top-0" @click="client.auth.signOut()">Logout</button>
         <form class="flex flex-col items-center p-12 w-2/5" @submit="addTask">
